@@ -1,0 +1,116 @@
+START
+[
+graveyard
+    You are in a cemetery, surrounded by grave markers with barely legible names. You are directly underneath the first tree that
+changes colors in the early days of fall. There is a small hole in the tree, like one that would house a family of birds if 
+it was springtime. To the east is a large, three-story building.
+]
+
+[
+coffin
+    You wake up in darkness. A damp chill and a stale smell, not altogether unpleasant, but not the thing of dreams either.
+As you gain control of your senses, you shift your weight and feel yourself cocooned by wood, perhaps mahogany or something
+else equally luxurious. You try to sit up and hit your head against a wooden ceiling, dust falling down around you. 
+You realize then that you are in a coffin, and you are unsure if you are dead or alive. You must find your answer.
+]
+
+[
+coffin_punch
+    You see the sky above you. Your grave is shallow, but you cannot see your full surroundings while inside the coffin.
+]
+
+[
+graveyard_tree
+    Inside the tree there is a nest with a key inside. There is also a small slip of paper.
+]
+
+[
+paper_graveyard_inspect
+    The paper has a short message: PAIN - LESS
+]
+
+[
+key_graveyard_inspect
+    a small glinting key
+]
+
+[
+path
+    a beaten dirt path leading to a building that has a book depository alongside the front doors. It must be a library.
+
+]
+
+[
+use_key_graveyard_east
+    you unlock the door to the library
+]
+
+[
+path_use_key_graveyard_east
+    a beaten dirt path leading to a building that has a book depository alongside the front doors. It must be a library.
+]
+
+[
+library
+    The room around you is lined with books. Three walls contain their own collections, one to the west, one to the north, 
+and one to the south. There is a door on the east wall.
+]
+
+[
+library_entrans_east
+    There is a bookshelf in front of you with various maps. Some are for the whole campus, 
+and some are for specific buildings. There is one that isn’t in line with the others.
+]
+
+[
+map_library_entrans_east_inspect
+-----------------------------------------------------------------------------
+|                    [     northern bookshelf     ]                N        |
+|\===\                                                             |        |
+| \===\ stareway to second floor                              W ---|--- E   |
+|  \===\                                                           |        |
+|                                                                  S        |
+|                                                                           |
+|                                                                     _____ |
+~                                                                      b    |
+[library entrans]            |----------|                              o    |
+~                            |  TABLE   |                              o    |
+|                            |          |                              k e  |
+|                            |----------|                              s a  |
+|                                                                      h s  |
+|                                                                      e t  |
+|                                                                      l    |
+|                                                                      f    |
+|                                                                     _____ |
+|                                                                           |
+|                                                                           |
+-----------------------------------------------------------------------------
+]
+
+[
+title_card_1
+                        WELCOM TO 
+ ____   _   _   ____     ____      _      ____   _____   ___    ____    ______        ___________
+|  _ \ | | | | |  _ \   / ___|    / \    / ___| |_   _| / _ \  |  _ \  /   _  \     /  __     __  \
+| |_)| | | | | | |_) | | |  _    / _ \   \___ \   | |  | | | | | |_) | |  (_) |    |  |__|   |__|  |
+|  __/ | |_| | |  _ <  | |_| |  / ___ \   ___)|   | |  | |_| | |  _ <  | _____/    |       ^       |
+|_|     \___/  |_| \_\  \___/  /_/   \_\ \____/   |_|   \___/  |_| \_| \_______/   |      / \      |
+                                                                                    \             /
+                                                                                     |   |   |   | 
+                                                                                     |___|___|___|
+
+]
+
+[
+title_card_2
+Tips:
+ - the comand help exists
+
+]
+
+[
+title_card_3
+Created by Elliot, Graceie, and Lucas for sewanee Freshmen oriantation.
+]
+
+END
