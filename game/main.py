@@ -127,31 +127,31 @@ class MainGame:
             self.location.text_entered.append(command[0])
             if command[0] == 'help':
                 self.help()
-                self.play_sound('/Users/elliotghall/Desktop/CSCI 157 Advent semester/Purgastory_web_deployed/web/game/sounds/chimessf.oog')
+                self.play_sound('sounds/chimessf.oog')
             elif command[0] == 'look':
                 second = command[1] if len(command) > 1 else None
                 self.look(second)
             elif command[0] == 'go':
                 if len(command) > 1:
                     self.go(command[1])
-                    self.play_sound('/Users/elliotghall/Desktop/CSCI 157 Advent semester/Purgastory_web_deployed/web/game/sounds/chimesfx.oog')
+                    self.play_sound('sounds/chimesfx.ogg')
                 else:
                     self.write('Go where?')
-                    self.play_sound('/Users/elliotghall/Desktop/CSCI 157 Advent semester/Purgastory_web_deployed/web/game/sounds/errordurmbSFX.oog')
+                    self.play_sound('sounds/errordurmbSFX.ogg')
             elif command[0] == 'punch':
                 self.write('You punch with all your might')
             elif command[0] == 'take':
                 if len(command) > 1:
                     self.take(command[1])
-                    self.play_sound('/Users/elliotghall/Desktop/CSCI 157 Advent semester/Purgastory_web_deployed/web/game/sounds/chimesfx.oog')
+                    self.play_sound('sounds/chimesfx.ogg')
                 else:
                     self.write('Take what?')
-                    self.play_sound('/Users/elliotghall/Desktop/CSCI 157 Advent semester/Purgastory_web_deployed/web/game/sounds/errordurmbSFX.oog')
+                    self.play_sound('sounds/errordurmbSFX.ogg')
             elif command[0] == 'open' and len(command) >1 and command[1] == 'inventory':
                 self.open_inventory()
             else:
                 self.write('ERROR 1')
-                self.play_sound('/Users/elliotghall/Desktop/CSCI 157 Advent semester/Purgastory_web_deployed/web/game/sounds/errordurmbSFX.oog')
+                self.play_sound('sounds/errordurmbSFX.ogg')
         else:
             self.write(command[0] + 'is not a command in posibal actions')
 
@@ -160,7 +160,7 @@ class MainGame:
     # inventory functions
     def open_inventory(self):
         self.inventory_open = True
-        self.inven_look()
+        #self.inven_look()
 
     def inven_look(self):
         self.write('You have')
@@ -219,7 +219,7 @@ class MainGame:
                 self.inventory.append(item)
                 self.write('You take the ' + nacheral_name)
         else:
-            self.write("there is no " + nacheral_name + ' hear' )
+            self.write("there is no " + nacheral_name + ' here' )
 
     def help(self):
         self.write('You can:')
@@ -294,7 +294,7 @@ class MainGame:
     
             
     def txtParser(self):
-        in_file = open('/Users/elliotghall/Desktop/CSCI 157 Advent semester/Purgastory_web_deployed/web/game/2.3.txt', 'r')
+        in_file = open('2.3.txt', 'r', encoding='utf-8')
         cline = in_file.readline().strip('\n')
         if cline == 'START':
             self.write('.txt captured')
@@ -334,18 +334,21 @@ class MainGame:
                 self.write(thing)
 
     def say_title_card(self):
-        self.play_sound('/Users/elliotghall/Desktop/CSCI 157 Advent semester/Purgastory_web_deployed/web/game/sounds/slowjingle(birth).oog')
+        self.play_sound('sounds/slowjingle(birth).ogg')
         self.say('title_card_1')
         self.say('title_card_2')
         self.say('title_card_3')
 
     async def run(self):
-            """Read keyboard events and draw the game without blocking."""
+                #Read keyboard events and draw the game without blocking.
             pygame.init()
-            screen = pygame.display.set_mode((960, 640))
+            screen = pygame.display.set_mode((970, 780))
+            mini_map = pygame.Surface((200, 50), pygame.SRCALPHA)
+            pygame.draw.rect(mini_map, (194, 194, 194), (0, 0, 200, 50), border_radius=12)
             pygame.display.set_caption("Dungeon Adventure")
             # The built-in font needs no separate font file.
-            font = pygame.font.Font(None, 28)
+            font = pygame.font.Font("SpecialElite-Regular.ttf", 18)
+            font_small =pygame.font.Font("Dongle-Light.ttf", 30)
             clock = pygame.time.Clock()
             command = ""
             running = True
@@ -373,24 +376,29 @@ class MainGame:
                                 else:
                                     self.handle_command(command)
                                 command = ""
-                                if not self.game_over:
-                                    self.write(
-                                        f"You are in the {self.location.name}." # !!!!!!!!!!!!!!!!! could chang o upda to creat location surface
-                                    )
+                                #if not self.game_over:
+                                    #self.write(
+                                    #    f"You are in the {self.location.name}." # !!!!!!!!!!!!!!!!! could chang o upda to creat location surface
+                                    #)
+
                             elif event.key == pygame.K_BACKSPACE:
                                 command = command[:-1]
                             elif event.unicode.isprintable():
-                                command = (command + event.unicode)[:60]
+                                command = (command + event.unicode)[:101]
 
                 screen.fill((20, 24, 32))
+
+                # --- draw agselery gui ---
+                screen.blit(mini_map, (760, 20))
 
                 # Wrap messages and show only the most recent lines.
                 lines = []
                 for message in self.messages:
-                    lines.extend(textwrap.wrap(message, width=65) or [""])
+                    lines.extend(textwrap.wrap(message, width=101) or [""])
+                    lines.append("")  # Add a blank line after each message.
                 for index, line in enumerate(lines[-17:]):
                     surface = font.render(line, True, (235, 235, 235))
-                    screen.blit(surface, (24, 20 + index * 30))
+                    screen.blit(surface, (24, 80 + index * 30))
 
                 if self.inventory_open:
                     inventory_text = ["--- INVENTORY ---"]
@@ -402,14 +410,19 @@ class MainGame:
 
                     for i, line in enumerate(inventory_text):
                         surface = font.render(line, True, (180, 220, 180))
-                        screen.blit(surface, (650, 100 + i * 30))
+                        screen.blit(surface, (510, 600 + i * 30))
+
+                if not self.game_over:
+                    mini_map.fill((194, 194, 194),(0, 0, 200, 50))
+                    location_surface = font_small.render('Location:' + str(self.location.name), True, (255, 117, 7))
+                    mini_map.blit(location_surface, (10, 6))
 
                 if self.game_over:
                     prompt = "Game ended. Refresh to restart; Esc closes the game."
                 else:
                     prompt = "> " + command + "_"
                 surface = font.render(prompt, True, (150, 220, 180))
-                screen.blit(surface, (24, 590))
+                screen.blit(surface, (24, 750))
                 pygame.display.flip()
                 clock.tick(30)
                 # Give the browser a turn on every frame.
