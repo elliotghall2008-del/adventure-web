@@ -184,6 +184,8 @@ class MainGame:
                     self.enter_password(' '.join(command[1:]))
                 else:
                     self.write('Enter the password.')
+            elif command[0] == 'use':
+                self.write('that is an inventory command pleas open inventory to use it')
             else:
                 self.write('ERROR 1')
                 self.play_sound('sounds/errordurmbSFX.ogg')
@@ -221,8 +223,11 @@ class MainGame:
             self.write('You close your inventory.')
         elif command[0] == 'inspect' and len(command) == 2:
             self.inven_inspect(command[1])
-        elif command[0] == 'use' and len(command) > 2:
-            self.inven_use(command[1], command[2])
+        elif command[0] == 'use' :
+            if len(command) > 2:
+                self.inven_use(command[1], command[2])
+            else:
+                self.write('the format for the use command is use (item name) (direction to use item in)')
         else:
             self.write('Unknown inventory command.')
 
@@ -256,7 +261,6 @@ class MainGame:
    
     def take(self,item):
         nacheral_name = item
-        # item = item + '_' + self.location.name
         if self.location.container:
             if item in self.location.container.in_items:
                 self.location.container.in_items.remove(item)
@@ -269,7 +273,7 @@ class MainGame:
 
     def help(self):
         self.write('You can:')
-        for action in ['look', 'go', 'take', 'open inventory'] + self.location.poss_actions:
+        for action in ['look, if you whant to look at an object enter: look (object name)', 'go', 'take', 'open inventory', 'object names are exact and include underscours'] + self.location.poss_actions:
             if action:
                 self.write('- ' + action)
 
@@ -366,17 +370,6 @@ class MainGame:
             if key[x] in self.text:
                 text = '\n'.join(self.text[key[x]])
 
-                #words = text.split(maxsplit=2)
-
-                #if words[0] == 'typewriter':
-                #    for character in words[2]:
-                #        self.write(character, end='', flush=True)
-                #        time.sleep(float(words[1]))
-
-                #    self.write()
-                #    self.write()
-
-                #else:
                 self.write(text)
 
             else:
@@ -419,8 +412,6 @@ class MainGame:
                         if event.key == pygame.K_ESCAPE:
                             if self.inventory_open:
                                 self.inventory_open = False
-                            else:
-                                running = False
                         elif not self.game_over:
                             if event.key == pygame.K_RETURN:
                                 self.write("> " + command)
@@ -466,7 +457,7 @@ class MainGame:
                     screen.blit(surface, (995, 20 + i * 30))
 
                 # command hint pinned to the bottom of the panel
-                for i, line in enumerate(["Commands: you must first open the inventory", "with open inventory", "help, inspect, use,", "close inventory"]):
+                for i, line in enumerate(["Commands: you must first open the inventory", "with open inventory", "help, inspect, use,", "close inventory = esc key or writen command"]):
                     surface = font.render(line, True, (255, 115, 28))
                     screen.blit(surface, (995, 660 + i * 30))
 
