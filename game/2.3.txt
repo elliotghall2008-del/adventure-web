@@ -57,13 +57,99 @@ and one to the south. There is a door on the east wall.
 ]
 
 [
-library_entrans_east
+library_entrance_east
     There is a bookshelf in front of you with various maps. Some are for the whole campus, 
 and some are for specific buildings. There is one that isn’t in line with the others.
 ]
 
 [
-map_library_entrans_east_inspect
+library_entrance_north
+There is a bookshelf along this wall. The bookshelf holds a plant, a clock, and a stack of newspapers.
+]
+[
+plant_library_entrance_north
+a simple catus in a colorfull pot on the bootom of the pot there is a deposit of metal on the bottom of the pot
+]
+[
+clock_library_entrance_north 
+After looking at the clock for a few minutes, you realize it is broken. It will be of no use to you
+]
+[
+newspaper_library_entrance_north
+The headline on the newspaper matches the message from the slip of paper you found outside: PAIN - LESS
+]
+[
+map_library_entrance_east_inspect
+on the map you see a bookshelf to the north and east and a stareway to the west
+]
+[
+key_library_entrance_east_inspect
+a small gold key found next to the poted plant
+]
+
+[
+library_second_floor_entrance
+When you look around this floor of the library, there aren’t as many bookshelves, but there are desks. 
+You see two desks in front of you, and one of them has a paper on it. the other is on the northern wall. There is a door to the third floor to the west.
+]
+[
+paper_desk
+“You have almost made it out of Purgastory. There is only one more challenge, and then you will be free.”
+]
+[
+desk_upstairs
+The desk is old and worn, and a pencil rests on top. There is a single drawer.
+]
+[
+key_upstairs_desk
+a havy and simpl brass key
+]
+[
+thired_floor_stairway
+Still in development but for now you have escaped Purgastory! Use this second chance wisely…
+]
+[
+stairway
+A bland stairway without anything inside
+]
+
+[
+go_fail_leave_condition
+that exit is locked 
+]
+[
+go_fail no destination
+there is no room there
+]
+
+[
+title_card_0
+version: 3.4 (11/15/2026 205833)
+]
+[
+title_card_1
+Tips:
+]
+[
+title_card_2
+ - type help if you get stuck 
+]
+[
+title_card_3
+ - some commands requiyar more than just the first word like a direction to ues somthing
+]
+[
+title_card_4
+ - objects have wiered names folowing the patern (type of item)_(item location name)
+]
+[
+title_card_5
+Created by Elliot, Graceie, and Lucas for sewanee Freshmen oriantation.
+]
+
+END
+
+unused asets
 -----------------------------------------------------------------------------
 |                    [     northern bookshelf     ]                N        |
 |\===\                                                             |        |
@@ -85,9 +171,8 @@ map_library_entrans_east_inspect
 |                                                                           |
 |                                                                           |
 -----------------------------------------------------------------------------
-]
 
-[
+#
 title_card_1
                         
  ____   _   _   ____     ____      _      ____   _____   ___    ____    ______        ___________
@@ -98,19 +183,4 @@ title_card_1
                                                                                     \             /
                                                                                      |   |   |   | 
                                                                                      |___|___|___|
-
-]
-
-[
-title_card_2
-Tips:
- - the comand help exists
-
-]
-
-[
-title_card_3
-Created by Elliot, Graceie, and Lucas for sewanee Freshmen oriantation.
-]
-
-END
+#

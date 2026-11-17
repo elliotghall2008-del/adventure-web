@@ -1,5 +1,4 @@
 import re
-import time
 import pygame
 import asyncio
 import textwrap
@@ -45,34 +44,58 @@ class MainGame:
         path.leave_condition = Leave_condition('use_key_graveyard_east', 'east' , 'locked')
 
         library_entrance = room('library', 'library', [''])
+        library_entrance.leave_condition = Leave_condition('use_key_bookshelf_south', 'south', 'locked')
 
-        library_entrance_east = room('library_entrance_east', 'library_entrance_east', [''])
-        library_entrance_east.container = Container('bookshelf', ['map_library_entrance_east'])
+        library_entrance_east = room('library entrance east', 'library_entrance_east', ['enter_password'])
+        library_entrance_east.leave_condition = Leave_condition('PAIN - LESS', 'east', 'padlock')
 
-        library_entrance_north = room('library_entrance_north', 'library_entrance_north', [''])
-        library_entrance_north.container = Container('bookshelf',['plant_library_entrance_north', 'clock_library_entrance_north', 'newspaper_library_entrance_north'])
+        library_entrance_east_bookshelf = room('library entrance east bookshelf', 'library_entrance_east_bookshelf', [''])
+        library_entrance_east_bookshelf.container = Container('bookshelf', ['map_library_entrance_east', 'dictionarys'])
+
+        library_entrance_north = room('library entrance north', 'library_entrance_north', [''])
+        library_entrance_north.container = Container('bookshelf',['plant_library_entrance_north', 'key_bookshelf', 'clock_library_entrance_north', 'newspaper_library_entrance_north'])
 
         stairway = room('stairway','stairway',[''])
 
-        library_second_floor_entrance = room('library_second_floor_entrance', 'library_second_floor_entrance', [''])
+        library_second_floor_entrance = room('library upstairs', 'library_second_floor_entrance', [''])
+        library_second_floor_entrance.container = Container('desk_upstairs',['paper_desk'])
+
+        library_second_floor_north = room('second floor northern wall', 'library_second_floor_north', [''] )
+        library_second_floor_north.container = Container('drawer',['key_upstairs_desk'])
+
+        thired_floor_stairway = room('thired floor stairway', 'thired_floor_stairway')
 
 
 
         # adding naighbors
         coffin.add_neighbor('up',graveyard)
+
         graveyard.add_neighbor('down',coffin)
         graveyard.add_neighbor('east',path)
+
         path.add_neighbor('west',graveyard)
         path.add_neighbor('east',library_entrance)
+
         library_entrance.add_neighbor('west',path)
         library_entrance.add_neighbor('east', library_entrance_east)
         library_entrance.add_neighbor('north', library_entrance_north)
-        library_entrance.add_neighbor('north west', stairway)
+        library_entrance.add_neighbor('south', stairway)
+
         library_entrance_east.add_neighbor('west', library_entrance)
+        library_entrance_east.add_neighbor('east', library_entrance_east_bookshelf)
+
+        library_entrance_east_bookshelf.add_neighbor('west', library_entrance_east)
+
         library_entrance_north.add_neighbor('south', library_entrance)
+
         stairway.add_neighbor('up', library_second_floor_entrance)
         stairway.add_neighbor('down', library_entrance)
-        library_second_floor_entrance.add_neighbor('north west', stairway)
+
+        library_second_floor_entrance.add_neighbor('south', stairway)
+        library_second_floor_entrance.add_neighbor('west', thired_floor_stairway)
+        library_second_floor_entrance.add_neighbor('north', library_second_floor_north)
+
+        library_second_floor_north.add_neighbor('south', library_second_floor_entrance)
 
         # dictionarys
 
@@ -102,6 +125,7 @@ class MainGame:
 
         # all prints must becom ^^^
 
+    
     def update(self):
         if self.location.leave_condition:
             condition = self.location.leave_condition.have_to_be_done
@@ -109,6 +133,8 @@ class MainGame:
             if condition in self.location.text_entered:
                 if not self.location.discription.endswith('_' + condition):
                     self.location.discription += '_' + condition
+  
+
     
     def caveman_parse(self, words):
         words = words.lower()
@@ -127,7 +153,7 @@ class MainGame:
             self.location.text_entered.append(command[0])
             if command[0] == 'help':
                 self.help()
-                self.play_sound('sounds/chimessf.oog')
+                self.play_sound('sounds/chimessf.ogg')
             elif command[0] == 'look':
                 second = command[1] if len(command) > 1 else None
                 self.look(second)
@@ -140,6 +166,8 @@ class MainGame:
                     self.play_sound('sounds/errordurmbSFX.ogg')
             elif command[0] == 'punch':
                 self.write('You punch with all your might')
+                if self.location == 'coffin':
+                    self.location.discription = 'coffin_punch'
             elif command[0] == 'take':
                 if len(command) > 1:
                     self.take(command[1])
@@ -149,12 +177,23 @@ class MainGame:
                     self.play_sound('sounds/errordurmbSFX.ogg')
             elif command[0] == 'open' and len(command) >1 and command[1] == 'inventory':
                 self.open_inventory()
+            elif command[0] == 'enter_password':
+                if len(command) > 1:
+                    self.enter_password(' '.join(command[1:]))
+                else:
+                    self.write('Enter the password.')
             else:
                 self.write('ERROR 1')
                 self.play_sound('sounds/errordurmbSFX.ogg')
         else:
-            self.write(command[0] + 'is not a command in posibal actions')
+            self.write(command[0] + 'is not somthing you can do here')
 
+    def enter_password(self, password):
+        if password.replace('-', '').replace(' ', '').lower() == 'painless':
+            self.location.text_entered.append('PAIN - LESS')
+            self.write('The padlock clicks open!')
+        else:
+            self.write('Incorrect password.')
 
     # inventory commands
     # inventory functions
@@ -199,6 +238,7 @@ class MainGame:
         if text == self.location.leave_condition.have_to_be_done:
             self.location.text_entered.append(text)
             self.say(text)
+
         else:
             self.write('You cannot use the ' + item + ' here.')
             
@@ -206,7 +246,7 @@ class MainGame:
         self.say(item + '_inspect')      
 
     def inven_help(self):
-        self.write('inventory commands: \n - help \n - close inventory \n - use (item) \n - inspect (item)')
+        self.write('inventory commands: \n - help \n - close inventory \n - use (item)...(direction) \n - inspect (item)')
    
     ###
    
@@ -218,8 +258,10 @@ class MainGame:
                 self.location.container.in_items.remove(item)
                 self.inventory.append(item)
                 self.write('You take the ' + nacheral_name)
+            else:
+                self.write("there is no " + nacheral_name + ' here' )
         else:
-            self.write("there is no " + nacheral_name + ' here' )
+            self.write('there is nothing to take here')
 
     def help(self):
         self.write('You can:')
@@ -232,12 +274,10 @@ class MainGame:
                 if self.location.leave_condition != None:
                     if self.check_leave_condition(heading):
                         self.location = destination
-                        self.actions = []
                     else:
                         self.say('go_fail leave condition')
                 else:
                     self.location = destination
-                    self.actions = []
             else:
                 self.say('go_fail no destination')
 
@@ -254,14 +294,15 @@ class MainGame:
     # look functions
 
     def look(self,second=None):
-        if second and second == self.location.container.name:
+        if second and self.location.container and second == self.location.container.name:
             if self.location.container:
                 words = (str(self.location.discription)+ '_' + str(self.location.container.name))
 
-                for item in self.location.container.in_items:
-                    words += ' ' + item
+                self.say(words)
 
-                self.write('inside there is' + words)
+                for item in self.location.container.in_items:
+                    self.write('- ' + item + '\n')
+                
         
         else: 
             self.say(self.location.discription)
@@ -273,17 +314,20 @@ class MainGame:
 
     def get_exits(self):
         exits = list(self.location.neighbors.keys())
+        if self.location.leave_condition is None:
+            return exits
 
-        if self.location.leave_condition:
-            if self.location.leave_condition.have_to_be_done not in self.location.text_entered:
-                heading = self.location.leave_condition.heding
+        condition = self.location.leave_condition.have_to_be_done
+        heading = self.location.leave_condition.heding
 
-                if heading in exits:
-                    exits.remove(heading)
-            if self.location.leave_condition.reason:
-                if self.location.leave_condition.reason == 'locked':
-                    exits.append('the door to the ' + str(self.location.leave_condition.heding) + ' is locked')
 
+        if condition not in self.location.text_entered:
+            if heading in exits:
+                exits.remove(heading)
+        if self.location.leave_condition.reason == 'locked':
+            exits.append('the door to the ' + str(heading) + ' is locked')
+        if self.location.leave_condition.reason == 'padlock':
+            exits.append('enter the password to the padlock to acces the bookshelf')
 
         return exits
 
@@ -316,28 +360,28 @@ class MainGame:
             if key[x] in self.text:
                 text = '\n'.join(self.text[key[x]])
 
-                words = text.split(maxsplit=2)
+                #words = text.split(maxsplit=2)
 
-                if words[0] == 'typewriter':
-                    for character in words[2]:
-                        self.write(character, end='', flush=True)
-                        time.sleep(float(words[1]))
+                #if words[0] == 'typewriter':
+                #    for character in words[2]:
+                #        self.write(character, end='', flush=True)
+                #        time.sleep(float(words[1]))
 
-                    self.write()
-                    self.write()
+                #    self.write()
+                #    self.write()
 
-                else:
-                    self.write(text)
+                #else:
+                self.write(text)
 
             else:
                 thing = ('No text found for key:', key[x])
                 self.write(thing)
 
-    def say_title_card(self):
+    async def say_title_card(self):
         self.play_sound('sounds/slowjingle(birth).ogg')
-        self.say('title_card_1')
-        self.say('title_card_2')
-        self.say('title_card_3')
+        for i in range(6):
+            self.say('title_card_' + str(i))
+            await asyncio.sleep(2)
 
     async def run(self):
                 #Read keyboard events and draw the game without blocking.
@@ -386,6 +430,8 @@ class MainGame:
                             elif event.unicode.isprintable():
                                 command = (command + event.unicode)[:101]
 
+                self.update()
+
                 screen.fill((20, 24, 32))
 
                 # --- draw agselery gui ---
@@ -398,19 +444,18 @@ class MainGame:
                     lines.append("")  # Add a blank line after each message.
                 for index, line in enumerate(lines[-17:]):
                     surface = font.render(line, True, (235, 235, 235))
-                    screen.blit(surface, (24, 80 + index * 30))
+                    screen.blit(surface, (24, 90 + index * 30))
 
-                if self.inventory_open:
-                    inventory_text = ["--- INVENTORY ---"]
+                inventory_text = ["--- INVENTORY ---"]
 
-                    for item in self.inventory:
-                        inventory_text.append("- " + item)
+                for item in self.inventory:
+                    inventory_text.append("- " + item)
 
-                    inventory_text.append("Commands: help, inspect, use, close inventory")
+                inventory_text.append("Commands: help, inspect, use, close inventory")
 
-                    for i, line in enumerate(inventory_text):
-                        surface = font.render(line, True, (180, 220, 180))
-                        screen.blit(surface, (510, 600 + i * 30))
+                for i, line in enumerate(inventory_text):
+                    surface = font.render(line, True, (255, 115, 28))
+                    screen.blit(surface, (510, 600 + i * 30))
 
                 if not self.game_over:
                     mini_map.fill((194, 194, 194),(0, 0, 200, 50))
@@ -420,8 +465,14 @@ class MainGame:
                 if self.game_over:
                     prompt = "Game ended. Refresh to restart; Esc closes the game."
                 else:
-                    prompt = "> " + command + "_"
-                surface = font.render(prompt, True, (150, 220, 180))
+                    if self.inventory_open:
+                        prompt = "(inventory command)> " + command + "_"
+                    else:
+                        prompt="> " + command + "_"
+                if self.inventory_open:
+                    surface = font.render(prompt, True, (255, 115, 28))
+                else:
+                    surface = font.render(prompt, True, (150, 220, 180))
                 screen.blit(surface, (24, 750))
                 pygame.display.flip()
                 clock.tick(30)
