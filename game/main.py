@@ -153,20 +153,22 @@ class MainGame:
             self.location.text_entered.append(command[0])
             if command[0] == 'help':
                 self.help()
-                self.play_sound('sounds/chimessf.ogg')
+                self.play_sound('sounds/chimesfx.ogg')
             elif command[0] == 'look':
                 second = command[1] if len(command) > 1 else None
                 self.look(second)
             elif command[0] == 'go':
                 if len(command) > 1:
-                    self.go(command[1])
-                    self.play_sound('sounds/chimesfx.ogg')
+                    if self.go(command[1]):
+                        self.play_sound('sounds/chimesfx.ogg')
+                    else:
+                        self.play_sound('sounds/errordurmbSFX.ogg')
                 else:
                     self.write('Go where?')
                     self.play_sound('sounds/errordurmbSFX.ogg')
             elif command[0] == 'punch':
                 self.write('You punch with all your might')
-                if self.location == 'coffin':
+                if self.location.name == 'coffin':          
                     self.location.discription = 'coffin_punch'
             elif command[0] == 'take':
                 if len(command) > 1:
@@ -186,7 +188,7 @@ class MainGame:
                 self.write('ERROR 1')
                 self.play_sound('sounds/errordurmbSFX.ogg')
         else:
-            self.write(command[0] + 'is not somthing you can do here')
+            self.write(command[0] + ' is not somthing you can do here')
 
     def enter_password(self, password):
         if password.replace('-', '').replace(' ', '').lower() == 'painless':
@@ -246,7 +248,9 @@ class MainGame:
         self.say(item + '_inspect')      
 
     def inven_help(self):
-        self.write('inventory commands: \n - help \n - close inventory \n - use (item)...(direction) \n - inspect (item)')
+        self.write('inventory commands:')
+        for line in ['help', 'close inventory', 'use (item) (direction)', 'inspect (item)']:
+            self.write('- ' + line)
    
     ###
    
@@ -265,21 +269,23 @@ class MainGame:
 
     def help(self):
         self.write('You can:')
-        for action in self.location.poss_actions:
-            self.write('- ' + action)
+        for action in ['look', 'go', 'take', 'open inventory'] + self.location.poss_actions:
+            if action:
+                self.write('- ' + action)
 
     def go(self, heading):
-            destination = self.location.get_destination(heading)
-            if destination:
-                if self.location.leave_condition != None:
-                    if self.check_leave_condition(heading):
-                        self.location = destination
-                    else:
-                        self.say('go_fail leave condition')
-                else:
-                    self.location = destination
-            else:
-                self.say('go_fail no destination')
+        destination = self.location.get_destination(heading)
+        if destination:
+            if self.location.leave_condition is None or self.check_leave_condition(heading):
+                self.location = destination
+                self.look()
+                if self.location.name == 'thired floor stairway':
+                    self.game_over = True
+                return True
+            self.say('go_fail leave condition')
+            return False
+        self.say('go_fail no destination')
+        return False
 
     def check_leave_condition(self,heding):
         if not self.location.leave_condition:
@@ -310,7 +316,7 @@ class MainGame:
             if exits == []:
                 self.write('there are no exits')
             else:
-                self.write('there are exits to the' + str(exits))
+                self.write('there are exits to the ' + ', '.join(exits))
 
     def get_exits(self):
         exits = list(self.location.neighbors.keys())
@@ -324,10 +330,10 @@ class MainGame:
         if condition not in self.location.text_entered:
             if heading in exits:
                 exits.remove(heading)
-        if self.location.leave_condition.reason == 'locked':
-            exits.append('the door to the ' + str(heading) + ' is locked')
-        if self.location.leave_condition.reason == 'padlock':
-            exits.append('enter the password to the padlock to acces the bookshelf')
+            if self.location.leave_condition.reason == 'locked':
+                exits.append('the door to the ' + str(heading) + ' is locked')
+            if self.location.leave_condition.reason == 'padlock':
+                exits.append('enter the password to the padlock to acces the bookshelf')
 
         return exits
 
@@ -381,14 +387,18 @@ class MainGame:
         self.play_sound('sounds/slowjingle(birth).ogg')
         for i in range(6):
             self.say('title_card_' + str(i))
-            await asyncio.sleep(2)
+            await asyncio.sleep(.5)
+
+    async def intro(self):
+        await self.say_title_card()
+        self.look()
 
     async def run(self):
                 #Read keyboard events and draw the game without blocking.
             pygame.init()
-            screen = pygame.display.set_mode((970, 780))
-            mini_map = pygame.Surface((200, 50), pygame.SRCALPHA)
-            pygame.draw.rect(mini_map, (194, 194, 194), (0, 0, 200, 50), border_radius=12)
+            screen = pygame.display.set_mode((1420, 780))
+            mini_map = pygame.Surface((300, 50), pygame.SRCALPHA)
+            pygame.draw.rect(mini_map, (194, 194, 194), (0, 0, 300, 50), border_radius=12)
             pygame.display.set_caption("Dungeon Adventure")
             # The built-in font needs no separate font file.
             font = pygame.font.Font("SpecialElite-Regular.ttf", 18)
@@ -398,8 +408,7 @@ class MainGame:
             running = True
 
             self.txtParser()
-            self.say_title_card()
-            self.look()
+            self.intro_task = asyncio.create_task(self.intro())
 
             # Keep drawing after a win/loss so the final message stays visible.
             while running:
@@ -435,7 +444,7 @@ class MainGame:
                 screen.fill((20, 24, 32))
 
                 # --- draw agselery gui ---
-                screen.blit(mini_map, (760, 20))
+                screen.blit(mini_map, (650, 20))
 
                 # Wrap messages and show only the most recent lines.
                 lines = []
@@ -446,24 +455,30 @@ class MainGame:
                     surface = font.render(line, True, (235, 235, 235))
                     screen.blit(surface, (24, 90 + index * 30))
 
+                pygame.draw.line(screen, (80, 85, 100), (975, 0), (975, 780), 2)
+
                 inventory_text = ["--- INVENTORY ---"]
-
-                for item in self.inventory:
+                for item in self.inventory[:20]:
                     inventory_text.append("- " + item)
-
-                inventory_text.append("Commands: help, inspect, use, close inventory")
 
                 for i, line in enumerate(inventory_text):
                     surface = font.render(line, True, (255, 115, 28))
-                    screen.blit(surface, (510, 600 + i * 30))
+                    screen.blit(surface, (995, 20 + i * 30))
+
+                # command hint pinned to the bottom of the panel
+                for i, line in enumerate(["Commands: you must first open the inventory", "with open inventory", "help, inspect, use,", "close inventory"]):
+                    surface = font.render(line, True, (255, 115, 28))
+                    screen.blit(surface, (995, 660 + i * 30))
 
                 if not self.game_over:
-                    mini_map.fill((194, 194, 194),(0, 0, 200, 50))
+                    mini_map.fill((0, 0, 0, 0))
+                    pygame.draw.rect(mini_map, (194, 194, 194), (0, 0, 300, 50), border_radius=12)
                     location_surface = font_small.render('Location:' + str(self.location.name), True, (255, 117, 7))
                     mini_map.blit(location_surface, (10, 6))
 
                 if self.game_over:
-                    prompt = "Game ended. Refresh to restart; Esc closes the game."
+                    prompt = "Congratulations, you have escaped Purgastory! Use this second chance wisely… the original plane was for the game to be longer but we ran out of time"
+
                 else:
                     if self.inventory_open:
                         prompt = "(inventory command)> " + command + "_"

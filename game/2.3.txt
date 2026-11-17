@@ -57,9 +57,45 @@ and one to the south. There is a door on the east wall.
 ]
 
 [
+use_key_bookshelf_south
+you unlock the southern door in the library
+]
+
+[
+library_use_key_bookshelf_south
+The room around you is lined with books. Three walls contain their own collections, one to the west, one to the north, 
+and one to the south. There is a door on the east wall.
+]
+
+[
 library_entrance_east
     There is a bookshelf in front of you with various maps. Some are for the whole campus, 
-and some are for specific buildings. There is one that isn’t in line with the others.
+and some are for specific buildings. There is one that isn’t in line with the others. But the shelf is incased in glass locked with a padlock.
+]
+
+[
+library_entrance_east_pain - less
+There is a bookshelf in front of you with various maps. Some are for the whole campus, 
+and some are for specific buildings. There is one that isn’t in line with the others. The glass is now open.
+]
+
+[
+library_entrance_east_bookshelf
+There is a bookshelf along this wall. The bookshelf holds a plant, a clock, and a stack of newspapers.
+]
+
+[
+library_entrance_east_bookshelf_bookshelf
+There is a bookshelf in front of you with various maps and books  
+Some are for the whole campus, and some are for specific
+buildings. One isn’t in line with the others. the book shelf contains map_library_entrance_east and dictionarys
+
+]
+
+[
+dictionarys_inspect
+he books on this shelf are over a thousand pages each. You will not have time to read them all,
+but you take note of the fact that they are all bilingual dictionaries.
 ]
 
 [
@@ -67,15 +103,19 @@ library_entrance_north
 There is a bookshelf along this wall. The bookshelf holds a plant, a clock, and a stack of newspapers.
 ]
 [
-plant_library_entrance_north
+library_entrance_north_bookshelf
+There is a bookshelf along this wall. The bookshelf holds a plant, a clock, and a stack of newspapers.
+]
+[
+plant_library_entrance_north_inspect
 a simple catus in a colorfull pot on the bootom of the pot there is a deposit of metal on the bottom of the pot
 ]
 [
-clock_library_entrance_north 
+clock_library_entrance_north_inspect
 After looking at the clock for a few minutes, you realize it is broken. It will be of no use to you
 ]
 [
-newspaper_library_entrance_north
+newspaper_library_entrance_north_inspect
 The headline on the newspaper matches the message from the slip of paper you found outside: PAIN - LESS
 ]
 [
@@ -83,7 +123,7 @@ map_library_entrance_east_inspect
 on the map you see a bookshelf to the north and east and a stareway to the west
 ]
 [
-key_library_entrance_east_inspect
+key_bookshelf_inspect
 a small gold key found next to the poted plant
 ]
 
@@ -93,15 +133,23 @@ When you look around this floor of the library, there aren’t as many bookshelv
 You see two desks in front of you, and one of them has a paper on it. the other is on the northern wall. There is a door to the third floor to the west.
 ]
 [
-paper_desk
+paper_desk_inspect
 “You have almost made it out of Purgastory. There is only one more challenge, and then you will be free.”
 ]
 [
-desk_upstairs
+library_second_floor_entrance_desk_upstairs
 The desk is old and worn, and a pencil rests on top. There is a single drawer.
 ]
 [
-key_upstairs_desk
+library_second_floor_north
+The desk is old and worn, and a pencil rests on top. There is a single drawer.
+]
+[
+library_second_floor_north_drawer
+There is a key in the drawer
+]
+[
+key_upstairs_desk_inspect
 a havy and simpl brass key
 ]
 [
@@ -114,7 +162,7 @@ A bland stairway without anything inside
 ]
 
 [
-go_fail_leave_condition
+go_fail leave condition
 that exit is locked 
 ]
 [
@@ -124,7 +172,7 @@ there is no room there
 
 [
 title_card_0
-version: 3.4 (11/15/2026 205833)
+version: 3.5 (11/16/2026 191932)
 ]
 [
 title_card_1
