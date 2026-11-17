@@ -153,6 +153,10 @@ key_upstairs_desk_inspect
 a havy and simpl brass key
 ]
 [
+desk_inspect
+you see a singel drawer
+]
+[
 thired_floor_stairway
 Still in development but for now you have escaped Purgastory! Use this second chance wisely…
 ]
@@ -172,7 +176,7 @@ there is no room there
 
 [
 title_card_0
-version: 3.5 (11/16/2026 191932)
+version: 3.5 (11/16/2026 final version)
 ]
 [
 title_card_1
@@ -192,7 +196,7 @@ title_card_4
 ]
 [
 title_card_5
-Created by Elliot, Graceie, and Lucas for sewanee Freshmen oriantation.
+Created by Elliot, Gracie, and Lucas for sewanee Freshmen oriantation.
 ]
 
 END

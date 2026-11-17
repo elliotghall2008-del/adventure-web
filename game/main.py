@@ -1,8 +1,25 @@
+#============================================================================================================
+# PURGASTORY
+# created by:
+# Elliot Hall = wrote the coad
+# Gracie = wrote the story
+# Lucas = composed the music
+# created as a group progect for Sewanee Freshman intro class
+# PURGASTORY is a text based advencher game writen in python around the premise that you are a goast stuck on 
+# sewanees campas and must find out what happend to you to end up in purgatory.
+#============================================================================================================
+
+# importing nesasary librarys for game
+
 import re
 import pygame
 import asyncio
 import textwrap
+import random
 
+#========================================================================================================================
+# Creating Classes for game
+#=========================================================================================================================
 class room:
     def __init__(self, name, discription, poss_actions=None, leave_condition=None, container=None):
         self.name = name
@@ -110,6 +127,12 @@ class MainGame:
 
         self.messages = []
 
+    #========================================================================================================================
+    # Functions for game
+    #=========================================================================================================================
+
+    # --- sound handaling functions ---
+
     def play_sound(self, sound_file):
         """Play a sound effect."""
         try:
@@ -119,12 +142,11 @@ class MainGame:
         except Exception as e:
             self.write(f"Error playing sound: {e}")
 
+    # --- general non player trigerd functions ---
+
     def write(self, message=""):
         """Add text to the game window's message log."""
         self.messages.append(str(message))
-
-        # all prints must becom ^^^
-
     
     def update(self):
         if self.location.leave_condition:
@@ -133,13 +155,13 @@ class MainGame:
             if condition in self.location.text_entered:
                 if not self.location.discription.endswith('_' + condition):
                     self.location.discription += '_' + condition
-  
-
     
     def caveman_parse(self, words):
         words = words.lower()
-        words = re.sub(r'\b(?:door|in|a|at|the|and|on|[|])\b', '', str(words)).strip()
+        words = re.sub(r'\b(?:door|in|da|dat|a|at|the|and|on|[|])\b', '', str(words)).strip()
         return words.split()
+
+        # --- main function caller ---
 
     def handle_command(self, words):
         command = self.caveman_parse(words)
@@ -187,10 +209,12 @@ class MainGame:
             elif command[0] == 'use':
                 self.write('that is an inventory command pleas open inventory to use it')
             else:
-                self.write('ERROR 1')
+                self.write('open is the precursor for inventory and does nothing else')
                 self.play_sound('sounds/errordurmbSFX.ogg')
         else:
             self.write(command[0] + ' is not somthing you can do here')
+
+    # --- functions called by player ---
 
     def enter_password(self, password):
         if password.replace('-', '').replace(' ', '').lower() == 'painless':
@@ -199,11 +223,10 @@ class MainGame:
         else:
             self.write('Incorrect password.')
 
-    # inventory commands
-    # inventory functions
+    # --- inventory functions ---
+
     def open_inventory(self):
         self.inventory_open = True
-        #self.inven_look()
 
     def inven_look(self):
         self.write('You have')
@@ -257,7 +280,7 @@ class MainGame:
         for line in ['help', 'close inventory', 'use (item) (direction)', 'inspect (item)']:
             self.write('- ' + line)
    
-    ###
+    # --- non inventory functions called by player ---
    
     def take(self,item):
         nacheral_name = item
@@ -301,7 +324,7 @@ class MainGame:
         else:
             return False
 
-    # look functions
+    # --- look functions ---
 
     def look(self,second=None):
         if second and self.location.container and second == self.location.container.name:
@@ -343,11 +366,10 @@ class MainGame:
 
 
 
-    # text handaling fuctions    
-    # creating a list of printable items in the game from 1 txt fiel.         
+    # --- text handaling fuctions ---  
     
             
-    def txtParser(self):
+    def txtParser(self): # creating a list of printable items in the game from 1 txt fiel.        
         in_file = open('2.3.txt', 'r', encoding='utf-8')
         cline = in_file.readline().strip('\n')
         if cline == 'START':
@@ -373,11 +395,11 @@ class MainGame:
                 self.write(text)
 
             else:
-                thing = ('No text found for key:', key[x])
+                #thing = ('No text found for key:', key[x])
+                thing = 'you can\'t do that'
                 self.write(thing)
 
     async def say_title_card(self):
-        self.play_sound('sounds/slowjingle(birth).ogg')
         for i in range(6):
             self.say('title_card_' + str(i))
             await asyncio.sleep(.5)
@@ -386,6 +408,19 @@ class MainGame:
         await self.say_title_card()
         self.look()
 
+    async def background_music(self):
+        tracks = ['sounds/slowjingle(birth).ogg', 'sounds/Ambientwithchimes.ogg']
+        while True:
+            try:
+                sound = pygame.mixer.Sound(random.choice(tracks))
+                sound.play()
+                await asyncio.sleep(sound.get_length())
+            except Exception as e:
+                self.write(f"Error playing music: {e}")
+                return
+    #============================================================================================================
+    # --- main screen rendering function and loop for runing game ---
+    #============================================================================================================
     async def run(self):
                 #Read keyboard events and draw the game without blocking.
             pygame.init()
@@ -402,6 +437,7 @@ class MainGame:
 
             self.txtParser()
             self.intro_task = asyncio.create_task(self.intro())
+            self.background_music_task =asyncio.create_task(self.background_music()) 
 
             # Keep drawing after a win/loss so the final message stays visible.
             while running:
@@ -420,11 +456,6 @@ class MainGame:
                                 else:
                                     self.handle_command(command)
                                 command = ""
-                                #if not self.game_over:
-                                    #self.write(
-                                    #    f"You are in the {self.location.name}." # !!!!!!!!!!!!!!!!! could chang o upda to creat location surface
-                                    #)
-
                             elif event.key == pygame.K_BACKSPACE:
                                 command = command[:-1]
                             elif event.unicode.isprintable():
@@ -472,9 +503,9 @@ class MainGame:
 
                 else:
                     if self.inventory_open:
-                        prompt = "(inventory command)> " + command + "_"
+                        prompt = "(inventory command)> " + command + "|"
                     else:
-                        prompt="> " + command + "_"
+                        prompt="> " + command + "|"
                 if self.inventory_open:
                     surface = font.render(prompt, True, (255, 115, 28))
                 else:
@@ -486,6 +517,8 @@ class MainGame:
                 await asyncio.sleep(0)
 
             pygame.quit()
+
+# --- final call to start game ---
 
 game = MainGame()
 asyncio.run(game.run())
